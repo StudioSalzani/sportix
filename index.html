@@ -156,7 +156,7 @@ h1{
   margin-top:2px; background:transparent;
 }
 .exo-check.on{background:var(--sage); border-color:var(--sage);}
-.exo-check.on::after{content:'✓'; color:var(--bg); font-weight:700; font-size:13px;}
+.exo-check.on::after{content:'âœ“'; color:var(--bg); font-weight:700; font-size:13px;}
 .exo-name{font-weight:600; font-size:14px;}
 .exo-target{font-family:'IBM Plex Mono'; font-size:12px; color:var(--chalk-dim); margin-top:2px;}
 .exo-inputs{display:flex; gap:8px; margin-top:10px;}
@@ -216,23 +216,23 @@ h1{
 </head>
 <body>
 <div class="wrap" id="app">
-  <div class="eyebrow">Programme v1.0 — 12 semaines</div>
+  <div class="eyebrow">Programme v1.0 â€” 12 semaines</div>
   <h1>Carnet PaM</h1>
-  <div class="subtitle">Coche, pèse, progresse. Bilan automatique toutes les 4 semaines.</div>
+  <div class="subtitle">Coche, pÃ¨se, progresse. Bilan automatique toutes les 4 semaines.</div>
 
   <div class="streak-row">
     <div class="plates" id="platesViz"></div>
     <div class="streak-text">
       <div class="streak-num" id="streakNum">0 semaine</div>
-      <div class="streak-label">de suite complètes</div>
+      <div class="streak-label">de suite complÃ¨tes</div>
     </div>
     <div class="points" id="pointsDisplay">0 pts</div>
   </div>
 
   <div class="week-selector">
-    <button id="prevWeek">‹</button>
-    <div class="week-label" id="weekLabel">—</div>
-    <button id="nextWeek">›</button>
+    <button id="prevWeek">â€¹</button>
+    <div class="week-label" id="weekLabel">â€”</div>
+    <button id="nextWeek">â€º</button>
   </div>
 
   <div class="card">
@@ -247,7 +247,7 @@ h1{
   </div>
 
   <div class="card">
-    <div class="card-title">Pesée de la semaine</div>
+    <div class="card-title">PesÃ©e de la semaine</div>
     <div class="weigh-row">
       <input type="number" step="0.1" id="weighInput" placeholder="Poids en kg">
       <button class="btn" id="saveWeigh">Enregistrer</button>
@@ -261,12 +261,12 @@ h1{
   <div id="bilanView" style="display:none;"></div>
 </div>
 
-<div class="save-flash" id="saveFlash">Enregistré ✓</div>
+<div class="save-flash" id="saveFlash">EnregistrÃ© âœ“</div>
 
 <script>
 // --- Stockage local (localStorage) : remplace window.storage pour un usage
 // hors Claude.ai (GitHub Pages, ouverture locale du fichier, etc.)
-// Les données restent sur CET appareil / CE navigateur uniquement.
+// Les donnÃ©es restent sur CET appareil / CE navigateur uniquement.
 const STORAGE_PREFIX = 'carnet-pam:';
 window.storage = {
   async get(key){
@@ -295,39 +295,39 @@ window.storage = {
 
 const PROGRAM = {
   lundi: {
-    label: 'Lundi — Pectoraux / Dos',
+    label: 'Lundi â€” Pectoraux / Dos',
     exos: [
-      {id:'bench', name:'Développé couché', target:'4 × 6-8 · objectif 60kg', main:true},
-      {id:'tirage_v', name:'Tirage vertical prise large', target:'4 × 8-10'},
-      {id:'rowing_b', name:'Rowing poulie basse', target:'4 × 10'},
-      {id:'elev_lat_1', name:'Élévations latérales', target:'4 × 15-20'},
-      {id:'curl_pupitre', name:'Curl pupitre (superset)', target:'3 × 12'},
-      {id:'triceps_1', name:'Triceps corde (superset)', target:'3 × 12'},
-      {id:'crunch', name:'Crunch poulie', target:'3 × 15'},
+      {id:'bench', name:'DÃ©veloppÃ© couchÃ©', target:'4 Ã— 6-8 Â· objectif 60kg', main:true},
+      {id:'tirage_v', name:'Tirage vertical prise large', target:'4 Ã— 8-10'},
+      {id:'rowing_b', name:'Rowing poulie basse', target:'4 Ã— 10'},
+      {id:'elev_lat_1', name:'Ã‰lÃ©vations latÃ©rales', target:'4 Ã— 15-20'},
+      {id:'curl_pupitre', name:'Curl pupitre (superset)', target:'3 Ã— 12'},
+      {id:'triceps_1', name:'Triceps corde (superset)', target:'3 Ã— 12'},
+      {id:'crunch', name:'Crunch poulie', target:'3 Ã— 15'},
     ]
   },
   mercredi: {
-    label: 'Mercredi — Jambes',
+    label: 'Mercredi â€” Jambes',
     exos: [
-      {id:'squat', name:'Squat', target:'4 × 8 · objectif 40kg', main:true},
-      {id:'presse', name:'Presse à cuisses', target:'4 × 12'},
-      {id:'rdl', name:'Soulevé de terre roumain (haltères)', target:'3 × 10'},
-      {id:'leg_curl', name:'Leg curl (superset)', target:'3 × 12'},
-      {id:'mollets', name:'Mollets (superset)', target:'4 × 15'},
-      {id:'gainage', name:'Gainage', target:'3 × 1 min'},
+      {id:'squat', name:'Squat', target:'4 Ã— 8 Â· objectif 40kg', main:true},
+      {id:'presse', name:'Presse Ã  cuisses', target:'4 Ã— 12'},
+      {id:'rdl', name:'SoulevÃ© de terre roumain (haltÃ¨res)', target:'3 Ã— 10'},
+      {id:'leg_curl', name:'Leg curl (superset)', target:'3 Ã— 12'},
+      {id:'mollets', name:'Mollets (superset)', target:'4 Ã— 15'},
+      {id:'gainage', name:'Gainage', target:'3 Ã— 1 min'},
     ]
   },
   vendredi: {
-    label: 'Vendredi — Épaules / Haut du corps',
+    label: 'Vendredi â€” Ã‰paules / Haut du corps',
     exos: [
-      {id:'dev_mil', name:'Développé militaire haltères', target:'4 × 8', main:true},
-      {id:'tractions', name:'Tractions assistées / tirage vertical', target:'4 × 10'},
-      {id:'rowing_conv', name:'Rowing machine convergente', target:'4 × 10'},
-      {id:'elev_lat_2', name:'Élévations latérales', target:'4 × 20'},
-      {id:'oiseau', name:'Oiseau machine (superset)', target:'3 × 15'},
-      {id:'curl_marteau', name:'Curl marteau (superset)', target:'3 × 12'},
-      {id:'triceps_2', name:'Triceps corde', target:'3 × 12'},
-      {id:'releves', name:'Relevés de jambes', target:'3 × 15'},
+      {id:'dev_mil', name:'DÃ©veloppÃ© militaire haltÃ¨res', target:'4 Ã— 8', main:true},
+      {id:'tractions', name:'Tractions assistÃ©es / tirage vertical', target:'4 Ã— 10'},
+      {id:'rowing_conv', name:'Rowing machine convergente', target:'4 Ã— 10'},
+      {id:'elev_lat_2', name:'Ã‰lÃ©vations latÃ©rales', target:'4 Ã— 20'},
+      {id:'oiseau', name:'Oiseau machine (superset)', target:'3 Ã— 15'},
+      {id:'curl_marteau', name:'Curl marteau (superset)', target:'3 Ã— 12'},
+      {id:'triceps_2', name:'Triceps corde', target:'3 Ã— 12'},
+      {id:'releves', name:'RelevÃ©s de jambes', target:'3 Ã— 15'},
     ]
   }
 };
@@ -465,7 +465,7 @@ async function render(){
   // week label
   const start = weekStart(currentWeek);
   const end = new Date(start); end.setUTCDate(start.getUTCDate()+6);
-  document.getElementById('weekLabel').textContent = `${currentWeek} · ${fmtDate(start)} – ${fmtDate(end)}`;
+  document.getElementById('weekLabel').textContent = `${currentWeek} Â· ${fmtDate(start)} â€“ ${fmtDate(end)}`;
 
   // week type
   document.querySelectorAll('.toggle-btn').forEach(b=>{
@@ -483,9 +483,9 @@ async function render(){
   // weigh history
   const wh = document.getElementById('weighHistory');
   if(weekData.weighins && weekData.weighins.length){
-    wh.innerHTML = weekData.weighins.map(w => `${w.weight} kg — ${new Date(w.date).toLocaleDateString('fr-FR')}`).join('<br>');
+    wh.innerHTML = weekData.weighins.map(w => `${w.weight} kg â€” ${new Date(w.date).toLocaleDateString('fr-FR')}`).join('<br>');
   } else {
-    wh.innerHTML = 'Aucune pesée enregistrée cette semaine.';
+    wh.innerHTML = 'Aucune pesÃ©e enregistrÃ©e cette semaine.';
   }
 
   renderTabs();
@@ -539,7 +539,7 @@ function renderSession(){
         </div>
         <div class="exo-inputs">
           <input type="number" step="0.5" placeholder="Poids (kg)" value="${state.poids}" data-field="poids" data-exo="${exo.id}">
-          <input type="text" placeholder="Répétitions" value="${state.reps}" data-field="reps" data-exo="${exo.id}">
+          <input type="text" placeholder="RÃ©pÃ©titions" value="${state.reps}" data-field="reps" data-exo="${exo.id}">
         </div>
       </div>`;
     }).join('') +
@@ -550,5 +550,4 @@ function renderSession(){
 
   el.querySelectorAll('[data-action="toggle"]').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const id = btn.dataset.exo;
-      sess.exos[id].checked = !sess.exos[id]
+     
