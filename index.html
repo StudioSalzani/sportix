@@ -1,1 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carnet PaM</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
+:root{
+  --bg:#1C1B19;
+  --surface:#242220;
+  --surface-2:#2C2A26;
+  --line:#3A372F;
+  --rust:#C4491D;
+  --rust-light:#E0693A;
+  --steel:#4A5D7A;
+  --steel-light:#6C82A3;
+  --sage:#8FA68E;
+  --chalk:#EDE8DE;
+  --chalk-dim:#8A8578;
+  --danger:#B23A3A;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  background:var(--bg);
+  color:var(--chalk);
+  font-family:'IBM Plex Sans', sans-serif;
+  min-height:100vh;
+  padding:24px 16px 60px;
+}
+.wrap{max-width:640px; margin:0 auto;}
+
+.eyebrow{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--rust-light);
+  margin-bottom:6px;
+}
+h1{
+  font-family:'Oswald', sans-serif;
+  font-weight:700;
+  font-size:32px;
+  letter-spacing:0.01em;
+  text-transform:uppercase;
+  line-height:1.05;
+  margin-bottom:4px;
+}
+.subtitle{color:var(--chalk-dim); font-size:14px; margin-bottom:24px;}
+
+/* --- streak plates --- */
+.streak-row{
+  display:flex; align-items:center; gap:12px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:14px 16px;
+  margin-bottom:20px;
+}
+.plates{display:flex; align-items:flex-end; gap:3px; height:34px;}
+.plate{
+  width:8px; border-radius:2px 2px 0 0;
+  background:linear-gradient(180deg, var(--rust-light), var(--rust));
+}
+.plate.empty{background:var(--line);}
+.streak-text{flex:1;}
+.streak-num{font-family:'Oswald'; font-size:20px; font-weight:600;}
+.streak-label{font-size:11px; color:var(--chalk-dim); text-transform:uppercase; letter-spacing:0.06em;}
+.points{
+  font-family:'IBM Plex Mono'; font-size:13px; color:var(--sage);
+  text-align:right;
+}
+
+/* --- cards --- */
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:18px;
+  margin-bottom:16px;
+}
+.card-title{
+  font-family:'Oswald'; font-size:15px; font-weight:600;
+  text-transform:uppercase; letter-spacing:0.04em;
+  margin-bottom:14px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+
+/* week type toggle */
+.toggle-group{display:flex; gap:8px; margin-bottom:14px;}
+.toggle-btn{
+  flex:1; padding:12px; border-radius:4px; border:1px solid var(--line);
+  background:var(--surface-2); color:var(--chalk-dim);
+  font-family:'IBM Plex Sans'; font-weight:600; font-size:13px;
+  text-transform:uppercase; letter-spacing:0.04em;
+  cursor:pointer; transition:all .15s;
+}
+.toggle-btn.active.jour{background:var(--rust); border-color:var(--rust); color:var(--chalk);}
+.toggle-btn.active.nuit{background:var(--steel); border-color:var(--steel); color:var(--chalk);}
+.toggle-btn:hover{border-color:var(--chalk-dim);}
+
+.week-badge{
+  font-family:'IBM Plex Mono'; font-size:11px;
+  padding:3px 8px; border-radius:3px;
+  text-transform:uppercase; letter-spacing:0.04em;
+}
+.week-badge.jour{background:rgba(196,73,29,0.18); color:var(--rust-light);}
+.week-badge.nuit{background:rgba(74,93,122,0.25); color:var(--steel-light);}
+
+/* weigh-in */
+.weigh-row{display:flex; gap:8px; align-items:center;}
+.weigh-row input{
+  flex:1; background:var(--surface-2); border:1px solid var(--line);
+  border-radius:4px; padding:10px 12px; color:var(--chalk);
+  font-family:'IBM Plex Mono'; font-size:15px;
+}
+.weigh-row input:focus{outline:none; border-color:var(--rust-light);}
+.btn{
+  background:var(--rust); color:var(--chalk); border:none; border-radius:4px;
+  padding:10px 16px; font-weight:600; font-size:13px; cursor:pointer;
+  text-transform:uppercase; letter-spacing:0.03em;
+  font-family:'IBM Plex Sans';
+  transition:background .15s;
+}
+.btn:hover{background:var(--rust-light);}
+.btn.ghost{background:transparent; border:1px solid var(--line); color:var(--chalk-dim);}
+.weigh-history{margin-top:10px; font-size:12px; color:var(--chalk-dim); font-family:'IBM Plex Mono';}
+
+/* tabs */
+.tabs{display:flex; gap:6px; margin-bottom:16px; overflow-x:auto;}
+.tab{
+  flex:1; text-align:center; padding:11px 8px; border-radius:4px;
+  background:var(--surface); border:1px solid var(--line);
+  font-family:'Oswald'; font-size:13px; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.03em; color:var(--chalk-dim); cursor:pointer; white-space:nowrap;
+  position:relative;
+}
+.tab.active{background:var(--surface-2); border-color:var(--rust); color:var(--chalk);}
+.tab .done-dot{
+  display:inline-block; width:6px; height:6px; border-radius:50%;
+  background:var(--sage); margin-left:6px; vertical-align:middle;
+}
+
+/* exercise rows */
+.exo{
+  border:1px solid var(--line); border-radius:4px; padding:12px;
+  margin-bottom:10px; background:var(--surface-2);
+}
+.exo.checked{border-color:var(--sage);}
+.exo-head{display:flex; align-items:flex-start; gap:10px;}
+.exo-check{
+  width:22px; height:22px; border-radius:4px; border:2px solid var(--chalk-dim);
+  flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  margin-top:2px; background:transparent;
+}
+.exo-check.on{background:var(--sage); border-color:var(--sage);}
+.exo-check.on::after{content:'✓'; color:var(--bg); font-weight:700; font-size:13px;}
+.exo-name{font-weight:600; font-size:14px;}
+.exo-target{font-family:'IBM Plex Mono'; font-size:12px; color:var(--chalk-dim); margin-top:2px;}
+.exo-inputs{display:flex; gap:8px; margin-top:10px;}
+.exo-inputs input{
+  background:var(--surface); border:1px solid var(--line); border-radius:4px;
+  padding:8px 10px; color:var(--chalk); font-family:'IBM Plex Mono'; font-size:13px; width:100%;
+}
+.exo-inputs input::placeholder{color:#5C594E;}
+.exo-inputs input:focus{outline:none; border-color:var(--rust-light);}
+
+.session-footer{display:flex; justify-content:space-between; align-items:center; margin-top:14px;}
+.session-progress{font-family:'IBM Plex Mono'; font-size:12px; color:var(--chalk-dim);}
+
+/* bilan */
+.bilan-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;}
+.stat-box{
+  background:var(--surface-2); border:1px solid var(--line); border-radius:4px;
+  padding:14px;
+}
+.stat-num{font-family:'Oswald'; font-size:24px; font-weight:600;}
+.stat-label{font-size:11px; color:var(--chalk-dim); text-transform:uppercase; letter-spacing:0.05em; margin-top:2px;}
+.stat-num.pos{color:var(--sage);}
+.stat-num.neg{color:var(--danger);}
+
+.lift-row{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--line);}
+.lift-row:last-child{border-bottom:none;}
+.lift-name{font-size:13px; font-weight:600;}
+.lift-vals{font-family:'IBM Plex Mono'; font-size:13px; color:var(--chalk-dim);}
+.lift-vals .arrow{color:var(--sage); margin:0 4px;}
+
+.badges{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+.badge{
+  background:rgba(196,73,29,0.15); border:1px solid var(--rust);
+  color:var(--rust-light); font-size:11px; padding:5px 10px; border-radius:20px;
+  font-family:'IBM Plex Mono'; letter-spacing:0.02em;
+}
+.badge.locked{
+  background:transparent; border:1px dashed var(--line); color:#5C594E;
+}
+.empty-state{color:var(--chalk-dim); font-size:13px; text-align:center; padding:20px 0;}
+
+.week-selector{display:flex; align-items:center; gap:10px; margin-bottom:16px;}
+.week-selector button{
+  background:var(--surface-2); border:1px solid var(--line); color:var(--chalk);
+  width:32px; height:32px; border-radius:4px; cursor:pointer; font-size:16px;
+}
+.week-selector .week-label{font-family:'IBM Plex Mono'; font-size:13px; color:var(--chalk-dim); flex:1; text-align:center;}
+
+.save-flash{
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  background:var(--sage); color:var(--bg); padding:10px 20px; border-radius:4px;
+  font-size:13px; font-weight:600; font-family:'IBM Plex Sans';
+  opacity:0; pointer-events:none; transition:opacity .3s;
+}
+.save-flash.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="eyebrow">Programme v1.0 — 12 semaines</div>
+  <h1>Carnet PaM</h1>
+  <div class="subtitle">Coche, pèse, progresse. Bilan automatique toutes les 4 semaines.</div>
+
+  <div class="streak-row">
+    <div class="plates" id="platesViz"></div>
+    <div class="streak-text">
+      <div class="streak-num" id="streakNum">0 semaine</div>
+      <div class="streak-label">de suite complètes</div>
+    </div>
+    <div class="points" id="pointsDisplay">0 pts</div>
+  </div>
+
+  <div class="week-selector">
+    <button id="prevWeek">‹</button>
+    <div class="week-label" id="weekLabel">—</div>
+    <button id="nextWeek">›</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      Type de semaine
+      <span class="week-badge" id="weekTypeBadge" style="display:none;"></span>
+    </div>
+    <div class="toggle-group">
+      <button class="toggle-btn jour" data-type="jour">Semaine de jour</button>
+      <button class="toggle-btn nuit" data-type="nuit">Semaine de nuit</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Pesée de la semaine</div>
+    <div class="weigh-row">
+      <input type="number" step="0.1" id="weighInput" placeholder="Poids en kg">
+      <button class="btn" id="saveWeigh">Enregistrer</button>
+    </div>
+    <div class="weigh-history" id="weighHistory"></div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="sessionView"></div>
+
+  <div id="bilanView" style="display:none;"></div>
+</div>
+
+<div class="save-flash" id="saveFlash">Enregistré ✓</div>
+
+<script>
+// --- Stockage local (localStorage) : remplace window.storage pour un usage
+// hors Claude.ai (GitHub Pages, ouverture locale du fichier, etc.)
+// Les données restent sur CET appareil / CE navigateur uniquement.
+const STORAGE_PREFIX = 'carnet-pam:';
+window.storage = {
+  async get(key){
+    const raw = localStorage.getItem(STORAGE_PREFIX + key);
+    if(raw === null) return null;
+    return { key, value: raw, shared:false };
+  },
+  async set(key, value){
+    localStorage.setItem(STORAGE_PREFIX + key, value);
+    return { key, value, shared:false };
+  },
+  async delete(key){
+    localStorage.removeItem(STORAGE_PREFIX + key);
+    return { key, deleted:true, shared:false };
+  },
+  async list(prefix){
+    const p = STORAGE_PREFIX + (prefix || '');
+    const keys = [];
+    for(let i=0; i<localStorage.length; i++){
+      const k = localStorage.key(i);
+      if(k && k.startsWith(p)) keys.push(k.slice(STORAGE_PREFIX.length));
+    }
+    return { keys, prefix, shared:false };
+  }
+};
+
+const PROGRAM = {
+  lundi: {
+    label: 'Lundi — Pectoraux / Dos',
+    exos: [
+      {id:'bench', name:'Développé couché', target:'4 × 6-8 · objectif 60kg', main:true},
+      {id:'tirage_v', name:'Tirage vertical prise large', target:'4 × 8-10'},
+      {id:'rowing_b', name:'Rowing poulie basse', target:'4 × 10'},
+      {id:'elev_lat_1', name:'Élévations latérales', target:'4 × 15-20'},
+      {id:'curl_pupitre', name:'Curl pupitre (superset)', target:'3 × 12'},
+      {id:'triceps_1', name:'Triceps corde (superset)', target:'3 × 12'},
+      {id:'crunch', name:'Crunch poulie', target:'3 × 15'},
+    ]
+  },
+  mercredi: {
+    label: 'Mercredi — Jambes',
+    exos: [
+      {id:'squat', name:'Squat', target:'4 × 8 · objectif 40kg', main:true},
+      {id:'presse', name:'Presse à cuisses', target:'4 × 12'},
+      {id:'rdl', name:'Soulevé de terre roumain (haltères)', target:'3 × 10'},
+      {id:'leg_curl', name:'Leg curl (superset)', target:'3 × 12'},
+      {id:'mollets', name:'Mollets (superset)', target:'4 × 15'},
+      {id:'gainage', name:'Gainage', target:'3 × 1 min'},
+    ]
+  },
+  vendredi: {
+    label: 'Vendredi — Épaules / Haut du corps',
+    exos: [
+      {id:'dev_mil', name:'Développé militaire haltères', target:'4 × 8', main:true},
+      {id:'tractions', name:'Tractions assistées / tirage vertical', target:'4 × 10'},
+      {id:'rowing_conv', name:'Rowing machine convergente', target:'4 × 10'},
+      {id:'elev_lat_2', name:'Élévations latérales', target:'4 × 20'},
+      {id:'oiseau', name:'Oiseau machine (superset)', target:'3 × 15'},
+      {id:'curl_marteau', name:'Curl marteau (superset)', target:'3 × 12'},
+      {id:'triceps_2', name:'Triceps corde', target:'3 × 12'},
+      {id:'releves', name:'Relevés de jambes', target:'3 × 15'},
+    ]
+  }
+};
+const DAYS = ['lundi','mercredi','vendredi'];
+
+function isoWeek(date){
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = (d.getUTCDay() + 6) % 7;
+  d.setUTCDate(d.getUTCDate() - dayNum + 3);
+  const firstThursday = new Date(Date.UTC(d.getUTCFullYear(),0,4));
+  const weekNum = 1 + Math.round(((d - firstThursday) / 86400000 - 3 + ((firstThursday.getUTCDay()+6)%7)) / 7);
+  return `${d.getUTCFullYear()}-W${String(weekNum).padStart(2,'0')}`;
+}
+function weekStart(weekId){
+  const [y,w] = weekId.split('-W').map(Number);
+  const jan4 = new Date(Date.UTC(y,0,4));
+  const dayNum = (jan4.getUTCDay()+6)%7;
+  const week1Mon = new Date(jan4); week1Mon.setUTCDate(jan4.getUTCDate()-dayNum);
+  const start = new Date(week1Mon); start.setUTCDate(week1Mon.getUTCDate() + (w-1)*7);
+  return start;
+}
+function shiftWeek(weekId, delta){
+  const start = weekStart(weekId);
+  start.setUTCDate(start.getUTCDate() + delta*7);
+  return isoWeek(start);
+}
+function fmtDate(d){
+  return d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'});
+}
+
+let currentWeek = isoWeek(new Date());
+let activeTab = 'lundi';
+let allWeeksCache = null; // list of {id, data}
+
+function emptyWeekData(){
+  const sessions = {};
+  DAYS.forEach(d => {
+    sessions[d] = { completedAt:null, exos:{} };
+    PROGRAM[d].exos.forEach(e => { sessions[d].exos[e.id] = {checked:false, poids:'', reps:''}; });
+  });
+  return { type:null, weighins:[], sessions };
+}
+
+async function loadWeek(weekId){
+  try{
+    const r = await window.storage.get('week:'+weekId, false);
+    if(r && r.value) return JSON.parse(r.value);
+  }catch(e){}
+  return emptyWeekData();
+}
+async function saveWeek(weekId, data){
+  try{
+    await window.storage.set('week:'+weekId, JSON.stringify(data), false);
+  }catch(e){ console.error('save failed', e); }
+}
+async function loadAllWeeks(){
+  try{
+    const list = await window.storage.list('week:', false);
+    if(!list || !list.keys) return [];
+    const results = [];
+    for(const k of list.keys){
+      try{
+        const r = await window.storage.get(k, false);
+        if(r && r.value) results.push({id:k.replace('week:',''), data:JSON.parse(r.value)});
+      }catch(e){}
+    }
+    results.sort((a,b)=> a.id < b.id ? -1 : 1);
+    return results;
+  }catch(e){ return []; }
+}
+
+function flash(msg){
+  const f = document.getElementById('saveFlash');
+  f.textContent = msg;
+  f.classList.add('show');
+  setTimeout(()=>f.classList.remove('show'), 1400);
+}
+
+let weekData = null;
+
+async function init(){
+  weekData = await loadWeek(currentWeek);
+  render();
+}
+
+function sessionComplete(sess){
+  return Object.values(sess.exos).every(e => e.checked);
+}
+function weekComplete(data){
+  return data.type && DAYS.every(d => sessionComplete(data.sessions[d]));
+}
+
+async function computeStreak(){
+  const weeks = await loadAllWeeks();
+  const map = {};
+  weeks.forEach(w => map[w.id] = w.data);
+  let streak = 0;
+  let cursor = currentWeek;
+  // count backwards from current week while complete
+  while(map[cursor] && weekComplete(map[cursor])){
+    streak++;
+    cursor = shiftWeek(cursor, -1);
+  }
+  return {streak, weeks};
+}
+
+function computePoints(weeks){
+  let pts = 0;
+  weeks.forEach(w => {
+    DAYS.forEach(d => {
+      const sess = w.data.sessions[d];
+      Object.values(sess.exos).forEach(e => { if(e.checked) pts += 10; });
+      if(sessionComplete(sess)) pts += 50;
+    });
+    if(w.data.weighins && w.data.weighins.length) pts += 20;
+    if(weekComplete(w.data)) pts += 100;
+  });
+  return pts;
+}
+
+function renderPlates(streak){
+  const el = document.getElementById('platesViz');
+  el.innerHTML = '';
+  const max = 8;
+  for(let i=0;i<max;i++){
+    const d = document.createElement('div');
+    const h = 10 + i*3;
+    d.className = 'plate' + (i < streak ? '' : ' empty');
+    d.style.height = Math.min(h,34)+'px';
+    el.appendChild(d);
+  }
+}
+
+async function render(){
+  // week label
+  const start = weekStart(currentWeek);
+  const end = new Date(start); end.setUTCDate(start.getUTCDate()+6);
+  document.getElementById('weekLabel').textContent = `${currentWeek} · ${fmtDate(start)} – ${fmtDate(end)}`;
+
+  // week type
+  document.querySelectorAll('.toggle-btn').forEach(b=>{
+    b.classList.toggle('active', weekData.type === b.dataset.type);
+  });
+  const badge = document.getElementById('weekTypeBadge');
+  if(weekData.type){
+    badge.style.display = 'inline-block';
+    badge.className = 'week-badge ' + weekData.type;
+    badge.textContent = weekData.type === 'jour' ? 'Jour' : 'Nuit';
+  } else {
+    badge.style.display = 'none';
+  }
+
+  // weigh history
+  const wh = document.getElementById('weighHistory');
+  if(weekData.weighins && weekData.weighins.length){
+    wh.innerHTML = weekData.weighins.map(w => `${w.weight} kg — ${new Date(w.date).toLocaleDateString('fr-FR')}`).join('<br>');
+  } else {
+    wh.innerHTML = 'Aucune pesée enregistrée cette semaine.';
+  }
+
+  renderTabs();
+  renderSession();
+
+  const {streak, weeks} = await computeStreak();
+  renderPlates(streak);
+  document.getElementById('streakNum').textContent = streak + (streak > 1 ? ' semaines' : ' semaine');
+  document.getElementById('pointsDisplay').textContent = computePoints(weeks) + ' pts';
+}
+
+function renderTabs(){
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = '';
+  DAYS.forEach(d => {
+    const t = document.createElement('div');
+    t.className = 'tab' + (activeTab === d ? ' active' : '');
+    const done = sessionComplete(weekData.sessions[d]);
+    t.innerHTML = d.charAt(0).toUpperCase()+d.slice(1) + (done ? '<span class="done-dot"></span>' : '');
+    t.onclick = () => { activeTab = d; document.getElementById('bilanView').style.display='none'; document.getElementById('sessionView').style.display='block'; render(); };
+    tabsEl.appendChild(t);
+  });
+  const bt = document.createElement('div');
+  bt.className = 'tab' + (document.getElementById('bilanView').style.display==='block' ? ' active' : '');
+  bt.textContent = 'Bilan';
+  bt.onclick = () => { showBilan(); };
+  tabsEl.appendChild(bt);
+}
+
+function renderSession(){
+  const day = activeTab;
+  const prog = PROGRAM[day];
+  const sess = weekData.sessions[day];
+  const el = document.getElementById('sessionView');
+  el.style.display = 'block';
+  document.getElementById('bilanView').style.display = 'none';
+
+  let checkedCount = Object.values(sess.exos).filter(e=>e.checked).length;
+  let total = prog.exos.length;
+
+  el.innerHTML = `<div class="card"><div class="card-title">${prog.label}</div>` +
+    prog.exos.map(exo => {
+      const state = sess.exos[exo.id];
+      return `<div class="exo ${state.checked?'checked':''}" data-exo="${exo.id}">
+        <div class="exo-head">
+          <div class="exo-check ${state.checked?'on':''}" data-action="toggle" data-exo="${exo.id}"></div>
+          <div style="flex:1;">
+            <div class="exo-name">${exo.name}</div>
+            <div class="exo-target">${exo.target}</div>
+          </div>
+        </div>
+        <div class="exo-inputs">
+          <input type="number" step="0.5" placeholder="Poids (kg)" value="${state.poids}" data-field="poids" data-exo="${exo.id}">
+          <input type="text" placeholder="Répétitions" value="${state.reps}" data-field="reps" data-exo="${exo.id}">
+        </div>
+      </div>`;
+    }).join('') +
+    `<div class="session-footer">
+       <div class="session-progress">${checkedCount} / ${total} exercices</div>
+     </div>
+   </div>`;
+
+  el.querySelectorAll('[data-action="toggle"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.exo;
+      sess.exos[id].checked = !sess.exos[id]
