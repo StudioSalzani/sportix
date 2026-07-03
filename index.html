@@ -156,7 +156,7 @@ h1{
   margin-top:2px; background:transparent;
 }
 .exo-check.on{background:var(--sage); border-color:var(--sage);}
-.exo-check.on::after{content:'âœ“'; color:var(--bg); font-weight:700; font-size:13px;}
+.exo-check.on::after{content:'✓'; color:var(--bg); font-weight:700; font-size:13px;}
 .exo-name{font-weight:600; font-size:14px;}
 .exo-target{font-family:'IBM Plex Mono'; font-size:12px; color:var(--chalk-dim); margin-top:2px;}
 .exo-inputs{display:flex; gap:8px; margin-top:10px;}
@@ -216,23 +216,23 @@ h1{
 </head>
 <body>
 <div class="wrap" id="app">
-  <div class="eyebrow">Programme v1.0 â€” 12 semaines</div>
+  <div class="eyebrow">Programme v1.0 — 12 semaines</div>
   <h1>Carnet PaM</h1>
-  <div class="subtitle">Coche, pÃ¨se, progresse. Bilan automatique toutes les 4 semaines.</div>
+  <div class="subtitle">Coche, pèse, progresse. Bilan automatique toutes les 4 semaines.</div>
 
   <div class="streak-row">
     <div class="plates" id="platesViz"></div>
     <div class="streak-text">
       <div class="streak-num" id="streakNum">0 semaine</div>
-      <div class="streak-label">de suite complÃ¨tes</div>
+      <div class="streak-label">de suite complètes</div>
     </div>
     <div class="points" id="pointsDisplay">0 pts</div>
   </div>
 
   <div class="week-selector">
-    <button id="prevWeek">â€¹</button>
-    <div class="week-label" id="weekLabel">â€”</div>
-    <button id="nextWeek">â€º</button>
+    <button id="prevWeek">‹</button>
+    <div class="week-label" id="weekLabel">—</div>
+    <button id="nextWeek">›</button>
   </div>
 
   <div class="card">
@@ -247,7 +247,7 @@ h1{
   </div>
 
   <div class="card">
-    <div class="card-title">PesÃ©e de la semaine</div>
+    <div class="card-title">Pesée de la semaine</div>
     <div class="weigh-row">
       <input type="number" step="0.1" id="weighInput" placeholder="Poids en kg">
       <button class="btn" id="saveWeigh">Enregistrer</button>
@@ -261,12 +261,12 @@ h1{
   <div id="bilanView" style="display:none;"></div>
 </div>
 
-<div class="save-flash" id="saveFlash">EnregistrÃ© âœ“</div>
+<div class="save-flash" id="saveFlash">Enregistré ✓</div>
 
 <script>
 // --- Stockage local (localStorage) : remplace window.storage pour un usage
 // hors Claude.ai (GitHub Pages, ouverture locale du fichier, etc.)
-// Les donnÃ©es restent sur CET appareil / CE navigateur uniquement.
+// Les données restent sur CET appareil / CE navigateur uniquement.
 const STORAGE_PREFIX = 'carnet-pam:';
 window.storage = {
   async get(key){
@@ -295,39 +295,39 @@ window.storage = {
 
 const PROGRAM = {
   lundi: {
-    label: 'Lundi â€” Pectoraux / Dos',
+    label: 'Lundi — Pectoraux / Dos',
     exos: [
-      {id:'bench', name:'DÃ©veloppÃ© couchÃ©', target:'4 Ã— 6-8 Â· objectif 60kg', main:true},
-      {id:'tirage_v', name:'Tirage vertical prise large', target:'4 Ã— 8-10'},
-      {id:'rowing_b', name:'Rowing poulie basse', target:'4 Ã— 10'},
-      {id:'elev_lat_1', name:'Ã‰lÃ©vations latÃ©rales', target:'4 Ã— 15-20'},
-      {id:'curl_pupitre', name:'Curl pupitre (superset)', target:'3 Ã— 12'},
-      {id:'triceps_1', name:'Triceps corde (superset)', target:'3 Ã— 12'},
-      {id:'crunch', name:'Crunch poulie', target:'3 Ã— 15'},
+      {id:'bench', name:'Développé couché', target:'4 × 6-8 · objectif 60kg', main:true},
+      {id:'tirage_v', name:'Tirage vertical prise large', target:'4 × 8-10'},
+      {id:'rowing_b', name:'Rowing poulie basse', target:'4 × 10'},
+      {id:'elev_lat_1', name:'Élévations latérales', target:'4 × 15-20'},
+      {id:'curl_pupitre', name:'Curl pupitre (superset)', target:'3 × 12'},
+      {id:'triceps_1', name:'Triceps corde (superset)', target:'3 × 12'},
+      {id:'crunch', name:'Crunch poulie', target:'3 × 15'},
     ]
   },
   mercredi: {
-    label: 'Mercredi â€” Jambes',
+    label: 'Mercredi — Jambes',
     exos: [
-      {id:'squat', name:'Squat', target:'4 Ã— 8 Â· objectif 40kg', main:true},
-      {id:'presse', name:'Presse Ã  cuisses', target:'4 Ã— 12'},
-      {id:'rdl', name:'SoulevÃ© de terre roumain (haltÃ¨res)', target:'3 Ã— 10'},
-      {id:'leg_curl', name:'Leg curl (superset)', target:'3 Ã— 12'},
-      {id:'mollets', name:'Mollets (superset)', target:'4 Ã— 15'},
-      {id:'gainage', name:'Gainage', target:'3 Ã— 1 min'},
+      {id:'squat', name:'Squat', target:'4 × 8 · objectif 40kg', main:true},
+      {id:'presse', name:'Presse à cuisses', target:'4 × 12'},
+      {id:'rdl', name:'Soulevé de terre roumain (haltères)', target:'3 × 10'},
+      {id:'leg_curl', name:'Leg curl (superset)', target:'3 × 12'},
+      {id:'mollets', name:'Mollets (superset)', target:'4 × 15'},
+      {id:'gainage', name:'Gainage', target:'3 × 1 min'},
     ]
   },
   vendredi: {
-    label: 'Vendredi â€” Ã‰paules / Haut du corps',
+    label: 'Vendredi — Épaules / Haut du corps',
     exos: [
-      {id:'dev_mil', name:'DÃ©veloppÃ© militaire haltÃ¨res', target:'4 Ã— 8', main:true},
-      {id:'tractions', name:'Tractions assistÃ©es / tirage vertical', target:'4 Ã— 10'},
-      {id:'rowing_conv', name:'Rowing machine convergente', target:'4 Ã— 10'},
-      {id:'elev_lat_2', name:'Ã‰lÃ©vations latÃ©rales', target:'4 Ã— 20'},
-      {id:'oiseau', name:'Oiseau machine (superset)', target:'3 Ã— 15'},
-      {id:'curl_marteau', name:'Curl marteau (superset)', target:'3 Ã— 12'},
-      {id:'triceps_2', name:'Triceps corde', target:'3 Ã— 12'},
-      {id:'releves', name:'RelevÃ©s de jambes', target:'3 Ã— 15'},
+      {id:'dev_mil', name:'Développé militaire haltères', target:'4 × 8', main:true},
+      {id:'tractions', name:'Tractions assistées / tirage vertical', target:'4 × 10'},
+      {id:'rowing_conv', name:'Rowing machine convergente', target:'4 × 10'},
+      {id:'elev_lat_2', name:'Élévations latérales', target:'4 × 20'},
+      {id:'oiseau', name:'Oiseau machine (superset)', target:'3 × 15'},
+      {id:'curl_marteau', name:'Curl marteau (superset)', target:'3 × 12'},
+      {id:'triceps_2', name:'Triceps corde', target:'3 × 12'},
+      {id:'releves', name:'Relevés de jambes', target:'3 × 15'},
     ]
   }
 };
@@ -465,7 +465,7 @@ async function render(){
   // week label
   const start = weekStart(currentWeek);
   const end = new Date(start); end.setUTCDate(start.getUTCDate()+6);
-  document.getElementById('weekLabel').textContent = `${currentWeek} Â· ${fmtDate(start)} â€“ ${fmtDate(end)}`;
+  document.getElementById('weekLabel').textContent = `${currentWeek} · ${fmtDate(start)} – ${fmtDate(end)}`;
 
   // week type
   document.querySelectorAll('.toggle-btn').forEach(b=>{
@@ -483,9 +483,9 @@ async function render(){
   // weigh history
   const wh = document.getElementById('weighHistory');
   if(weekData.weighins && weekData.weighins.length){
-    wh.innerHTML = weekData.weighins.map(w => `${w.weight} kg â€” ${new Date(w.date).toLocaleDateString('fr-FR')}`).join('<br>');
+    wh.innerHTML = weekData.weighins.map(w => `${w.weight} kg — ${new Date(w.date).toLocaleDateString('fr-FR')}`).join('<br>');
   } else {
-    wh.innerHTML = 'Aucune pesÃ©e enregistrÃ©e cette semaine.';
+    wh.innerHTML = 'Aucune pesée enregistrée cette semaine.';
   }
 
   renderTabs();
@@ -539,7 +539,7 @@ function renderSession(){
         </div>
         <div class="exo-inputs">
           <input type="number" step="0.5" placeholder="Poids (kg)" value="${state.poids}" data-field="poids" data-exo="${exo.id}">
-          <input type="text" placeholder="RÃ©pÃ©titions" value="${state.reps}" data-field="reps" data-exo="${exo.id}">
+          <input type="text" placeholder="Répétitions" value="${state.reps}" data-field="reps" data-exo="${exo.id}">
         </div>
       </div>`;
     }).join('') +
@@ -550,4 +550,140 @@ function renderSession(){
 
   el.querySelectorAll('[data-action="toggle"]').forEach(btn => {
     btn.addEventListener('click', async () => {
-     
+      const id = btn.dataset.exo;
+      sess.exos[id].checked = !sess.exos[id].checked;
+      if(sessionComplete(sess)) sess.completedAt = new Date().toISOString();
+      await saveWeek(currentWeek, weekData);
+      render();
+    });
+  });
+  el.querySelectorAll('input[data-field]').forEach(inp => {
+    inp.addEventListener('change', async () => {
+      const id = inp.dataset.exo;
+      const field = inp.dataset.field;
+      sess.exos[id][field] = inp.value;
+      await saveWeek(currentWeek, weekData);
+      flash('Enregistré ✓');
+    });
+  });
+}
+
+async function showBilan(){
+  document.getElementById('sessionView').style.display = 'none';
+  const bv = document.getElementById('bilanView');
+  bv.style.display = 'block';
+  renderTabs();
+
+  const weeks = await loadAllWeeks();
+  const last4 = weeks.slice(-4);
+
+  if(!last4.length){
+    bv.innerHTML = `<div class="card"><div class="empty-state">Pas encore assez de données. Reviens ici après quelques semaines de suivi.</div></div>`;
+    return;
+  }
+
+  // sessions completed
+  let completed = 0, plannedTotal = last4.length * 3;
+  last4.forEach(w => DAYS.forEach(d => { if(sessionComplete(w.data.sessions[d])) completed++; }));
+
+  // weight trend
+  const weighinsFlat = [];
+  last4.forEach(w => (w.data.weighins||[]).forEach(x => weighinsFlat.push(x)));
+  weighinsFlat.sort((a,b)=> new Date(a.date)-new Date(b.date));
+  const firstW = weighinsFlat[0], lastW = weighinsFlat[weighinsFlat.length-1];
+  const deltaW = (firstW && lastW) ? (lastW.weight - firstW.weight) : null;
+
+  // main lifts progression
+  const mainLifts = [
+    {id:'bench', name:'Développé couché', day:'lundi'},
+    {id:'squat', name:'Squat', day:'mercredi'},
+    {id:'dev_mil', name:'Développé militaire', day:'vendredi'},
+  ];
+  const liftRows = mainLifts.map(lift => {
+    const vals = [];
+    last4.forEach(w => {
+      const e = w.data.sessions[lift.day].exos[lift.id];
+      if(e && e.poids) vals.push(parseFloat(e.poids));
+    });
+    if(vals.length < 1) return `<div class="lift-row"><div class="lift-name">${lift.name}</div><div class="lift-vals">Pas de données</div></div>`;
+    const first = vals[0], last = vals[vals.length-1];
+    const diff = last-first;
+    return `<div class="lift-row">
+      <div class="lift-name">${lift.name}</div>
+      <div class="lift-vals">${first}kg <span class="arrow">→</span> ${last}kg ${diff!==0 ? `(${diff>0?'+':''}${diff.toFixed(1)}kg)` : ''}</div>
+    </div>`;
+  }).join('');
+
+  // badges
+  const badgesPossible = [
+    {id:'streak3', label:"3 semaines d'affilée", earned: (await computeStreak()).streak >= 3},
+    {id:'full4', label:'12/12 séances du mois', earned: completed === 12},
+    {id:'weightloss', label:'Poids en baisse', earned: deltaW !== null && deltaW < 0},
+    {id:'strength', label:'Progression de charge', earned: mainLifts.some(l => {
+        const vals = [];
+        last4.forEach(w => { const e = w.data.sessions[l.day].exos[l.id]; if(e && e.poids) vals.push(parseFloat(e.poids)); });
+        return vals.length>=2 && vals[vals.length-1] > vals[0];
+      })},
+  ];
+
+  bv.innerHTML = `
+    <div class="card">
+      <div class="card-title">Bilan — 4 dernières semaines</div>
+      <div class="bilan-grid">
+        <div class="stat-box">
+          <div class="stat-num">${completed} / ${plannedTotal}</div>
+          <div class="stat-label">Séances faites</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num ${deltaW===null?'':(deltaW<=0?'pos':'neg')}">${deltaW===null?'—':(deltaW>0?'+':'')+deltaW.toFixed(1)+' kg'}</div>
+          <div class="stat-label">Évolution du poids</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Progression des charges</div>
+      ${liftRows}
+    </div>
+    <div class="card">
+      <div class="card-title">Badges</div>
+      <div class="badges">
+        ${badgesPossible.map(b => `<div class="badge ${b.earned?'':'locked'}">${b.earned?'★ ':''}${b.label}</div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// event bindings
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    weekData.type = btn.dataset.type;
+    await saveWeek(currentWeek, weekData);
+    render();
+  });
+});
+document.getElementById('saveWeigh').addEventListener('click', async () => {
+  const inp = document.getElementById('weighInput');
+  const val = parseFloat(inp.value);
+  if(!val || val <= 0) return;
+  weekData.weighins = weekData.weighins || [];
+  weekData.weighins.push({weight: val, date: new Date().toISOString()});
+  await saveWeek(currentWeek, weekData);
+  inp.value = '';
+  flash('Pesée enregistrée ✓');
+  render();
+});
+document.getElementById('prevWeek').addEventListener('click', async () => {
+  currentWeek = shiftWeek(currentWeek, -1);
+  weekData = await loadWeek(currentWeek);
+  render();
+});
+document.getElementById('nextWeek').addEventListener('click', async () => {
+  currentWeek = shiftWeek(currentWeek, 1);
+  weekData = await loadWeek(currentWeek);
+  render();
+});
+
+init();
+</script>
+</body>
+</html>
